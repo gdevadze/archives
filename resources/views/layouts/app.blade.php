@@ -31,19 +31,19 @@
                 <div class="navbar-brand-box">
                     <a href="{{ route('dashboard') }}" class="logo logo-dark">
                                 <span class="logo-sm">
-                                    <img src="{{ asset('assets/img/logo/logo.png') }}" alt="" height="40">
+                                    <img src="https://metroholding.ge/assets/images/logo-dark.png" alt="" height="40">
                                 </span>
                         <span class="logo-lg">
-                                    <img src="{{ asset('assets/img/logo/logo.png') }}" alt="" height="40">
+                                    <img src="https://metroholding.ge/assets/images/logo-dark.png" alt="" height="40">
                                 </span>
                     </a>
 
                     <a href="{{ route('dashboard') }}" class="logo logo-light">
                                 <span class="logo-sm">
-                                    <img src="{{ asset('assets/img/logo/logo.png') }}" alt="" height="40">
+                                    <img src="https://metroholding.ge/assets/images/logo-dark.png" alt="" height="40">
                                 </span>
                         <span class="logo-lg">
-                                    <img src="{{ asset('assets/img/logo/logo.png') }}" alt="" height="40">
+                                    <img src="https://metroholding.ge/assets/images/logo-dark.png" alt="" height="40">
                                 </span>
                     </a>
                 </div>

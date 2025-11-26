@@ -8,43 +8,54 @@
     <!-- Responsive datatable examples -->
     <link href="{{ asset('admin/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css') }}"
           rel="stylesheet" type="text/css"/>
+
+    <style>
+        .company-card {
+            transition: 0.25s;
+            border-radius: 12px;
+        }
+        .company-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+        }
+    </style>
 @endpush
 @section('content')
     <div class="page-content">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-xl-12">
-                    <div class="row">
-                        <div class="col-lg-4">
-                            <a href="{{ route('users.index') }}">
-                                <div class="card mini-stats-wid">
-                                    <div class="card-body">
+                <h2 class="fw-bold mb-4">კომპანიები</h2>
 
-                                        <div class="d-flex flex-wrap">
-                                            <div class="me-3">
-                                                <p class="text-muted mb-2">მომხმარებლები</p>
-                                                <h5 class="mb-0">{{ $users }}</h5>
-                                            </div>
+                <div class="row">
+                    @foreach($companies as $company)
+                        <div class="col-md-4 col-xl-3 p-3">
+                            <a href="{{ route('company', $company->id) }}" class="text-decoration-none">
+                                <div class="card shadow-sm border-0 company-card h-100">
+                                    <div class="card-body text-center p-4">
 
-                                            <div class="avatar-sm ms-auto">
-                                                <div
-                                                    class="avatar-title bg-light rounded-circle text-primary font-size-20">
-                                                    <i class="bx bxs-user"></i>
-                                                </div>
-                                            </div>
+                                        <div class="icon bg-primary bg-opacity-25 rounded-circle mb-3 d-flex
+        justify-content-center align-items-center text-primary fw-bold shadow-sm"
+                                             style="width:70px;height:70px;margin:auto; font-size:20px; letter-spacing:1px;">
+                                            {{ strtoupper($company->code ?? substr($company->name, 0, 2)) }}
+                                        </div>
+
+
+                                        <h5 class="fw-bold text-dark">{{ $company->company_name }}</h5>
+
+                                        @if($company->identification_code)
+                                            <p class="text-muted small mt-1">ს/ნ: {{ $company->identification_code }}</p>
+                                        @endif
+
+                                        <div class="mt-2 small text-secondary">
+                                            <i class="bi bi-folder"></i>
+                                            {{ $company->documents_count }} დოკუმენტი
                                         </div>
 
                                     </div>
                                 </div>
                             </a>
                         </div>
-
-
-
-                    </div>
-                    <!-- end row -->
-
-
+                    @endforeach
                 </div>
                 <!-- end col -->
 

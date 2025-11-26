@@ -18,7 +18,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                        <h4 class="mb-sm-0 font-size-18">კომპანიები</h4>
+                        <h4 class="mb-sm-0 font-size-18">ხელშეკრულების ტიპები</h4>
 
 
                     </div>
@@ -41,7 +41,7 @@
                             {{--                                default, so all you need to do to use it with your own tables is to call--}}
                             {{--                                the construction function: <code>$().DataTable();</code>.--}}
                             {{--                            </p>--}}
-                            <a type="submit" href="{{ route('companies.create') }}" class="btn btn-outline-primary waves-effect waves-light mb-2">
+                            <a type="submit" href="{{ route('contract_types.create') }}" class="btn btn-outline-primary waves-effect waves-light mb-2">
                                 დამატება
                             </a>
                             <table id="slides" class="table table-bordered dt-responsive  nowrap w-100">
@@ -49,8 +49,6 @@
                                 <tr>
                                     <th scope="col">#</th>
                                     <th scope="col">დასახელება</th>
-                                    <th scope="col">კოდი</th>
-                                    <th scope="col">საიდენტიფიკაციო ნომერი</th>
                                     <th scope="col">მოქმედება</th>
                                 </tr>
                                 </thead>
@@ -147,7 +145,7 @@ $(document).ready(function() {
                     url: "{{ __('table-language') }}"
                 },
                 ajax: {
-                    url: "{{ route('companies.ajax') }}",
+                    url: "{{ route('contract_types.ajax') }}",
                     type: 'POST',
                     data: function (d) {
                         d._token = '{{ csrf_token() }}'
@@ -155,9 +153,7 @@ $(document).ready(function() {
                 },
                 columns: [
                     {data: 'id', name: 'id'},
-                    {data: 'company_name', name: 'company_name'},
-                    {data: 'code', name: 'code'},
-                    {data: 'identification_code', name: 'identification_code'},
+                    {data: 'contract_type_name', name: 'contract_type_name'},
                     {data: 'action', name: 'action'}
                 ]
             });

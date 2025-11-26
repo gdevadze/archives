@@ -10,9 +10,23 @@
         </li>
 
         <li>
+            <a href="{{ route('documents.create') }}" class="waves-effect">
+                <i class="bx bx-list-ol"></i>
+                <span>დოკუმენტის ატვირთვა</span>
+            </a>
+        </li>
+
+        <li>
             <a href="{{ route('companies.index') }}" class="waves-effect">
                 <i class="bx bx-list-ol"></i>
                 <span>კომპანიები</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ route('contract_types.index') }}" class="waves-effect">
+                <i class="bx bx-list-ol"></i>
+                <span>ხელშეკრულების ტიპები</span>
             </a>
         </li>
 
@@ -30,12 +44,12 @@
             </a>
         </li>
 
-{{--        <li>--}}
-{{--            <a href="{{ route('admin.reports.properties') }}" class="waves-effect">--}}
-{{--                <i class="bx bx-list-ol"></i>--}}
-{{--                <span>რეპორტები</span>--}}
-{{--            </a>--}}
-{{--        </li>--}}
+        <li>
+            <a href="{{ route('reports.documents') }}" class="waves-effect">
+                <i class="bx bx-list-ol"></i>
+                <span>რეპორტები</span>
+            </a>
+        </li>
 
 {{--            <li>--}}
 {{--                <a href="javascript: void(0);" class="has-arrow waves-effect">--}}

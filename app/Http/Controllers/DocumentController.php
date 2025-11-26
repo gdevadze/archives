@@ -1,0 +1,200 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Company;
+use App\Models\ContractType;
+use App\Models\Document;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Illuminate\View\View;
+
+class DocumentController extends Controller
+{
+    public function create(): View
+    {
+        $companies     = Company::all();
+        $contractTypes = ContractType::all();
+
+        return view('pages.documents.create', compact('companies', 'contractTypes'));
+    }
+
+    public function uploadTemp(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:pdf|max:51200'
+        ]);
+
+        $file = $request->file('file');
+
+        $originalName = $file->getClientOriginalName();
+        $tempName = time() . '_' . $originalName;
+
+        $tempDir = storage_path('app/public/temp');
+        if (!file_exists($tempDir)) {
+            mkdir($tempDir, 0777, true);
+        }
+
+        $file->move($tempDir, $tempName);
+
+        return response()->json([
+            'status'     => 'success',
+            'temp_file'  => $tempName,
+            'file_name'  => $originalName,
+            'temp_url'   => asset('storage/temp/' . $tempName),
+        ]);
+    }
+
+
+
+    public function storeAjax(Request $request)
+    {
+        $request->validate([
+            'company_id'        => 'required|exists:companies,id',
+            'contract_type_id'  => 'required|exists:contract_types,id',
+            'year'              => 'required|digits:4',
+            'contract_date'     => 'nullable|date',
+            'file_original_name'=> 'required|string',
+            'temp_file'         => 'required|string'
+        ]);
+
+        $tempPath = storage_path("app/public/temp/" . $request->temp_file);
+
+        if (!file_exists($tempPath)) {
+            return response()->json([
+                "status" => "error",
+                "message" => "დროებითი ფაილი ვერ მოიძებნა"
+            ], 404);
+        }
+
+        $company = Company::findOrFail($request->company_id);
+        $contractType = ContractType::findOrFail($request->contract_type_id);
+        $companySlug = Str::slug($company->company_name, '_');
+        $year = $request->year;
+
+        // შექმნა საბოლოო საქაღალდე
+        $finalDir = storage_path("app/public/documents/{$companySlug}/{$year}");
+        if (!file_exists($finalDir)) {
+            mkdir($finalDir, 0777, true);
+        }
+
+        // ორიგინალი სახელი: example.pdf
+        $original = $request->file_original_name;
+
+        // basename + timestamp → example_1737312345.pdf
+        $nameWithoutExt = pathinfo($original, PATHINFO_FILENAME);
+        $ext = pathinfo($original, PATHINFO_EXTENSION);
+
+        $finalName = $nameWithoutExt . "_" . time() . "." . $ext;
+
+        // ფაილის საბოლოო მისამართი
+        $finalPath = $finalDir . "/" . $finalName;
+
+        // გადატანა temp → documents
+        rename($tempPath, $finalPath);
+
+        $title = getTrx();
+
+        Document::create([
+            'company_id'       => $request->company_id,
+            'contract_type_id' => $request->contract_type_id,
+            'year'             => $year,
+
+            // TITLE არის "ორიგინალი სახელი" (example.pdf)
+            'title'            => $title,
+
+            'file_path'        => "documents/{$companySlug}/{$year}/{$finalName}",
+            'original_name'    => $original,
+            'mime_type'        => 'application/pdf',
+            'size'             => filesize($finalPath),
+            'contract_date'    => $request->contract_date,
+            'uploaded_by'      => Auth::id(),
+        ]);
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'დოკუმენტი წარმატებით შეინახა! - დოკუმენტის ნომერი: '.$title
+        ]);
+    }
+
+
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'company_id'        => 'required|exists:companies,id',
+            'contract_type_id'  => 'required|exists:contract_types,id',
+            'year'              => 'required|digits:4|integer',
+            'title'             => 'required|string|max:255',
+            'contract_date'     => 'nullable|date',
+            'file'              => 'required|file|max:51200', // 50MB
+        ]);
+
+        if (! $request->hasFile('file')) {
+            return back()->withErrors(['file' => 'ფაილი ვერ მოიძებნა მოთხოვნაში.']);
+        }
+
+        $file    = $request->file('file');
+        $year    = $request->year;
+        $company = Company::findOrFail($request->company_id);
+
+// საქაღალდეების სტრუქტურა: storage/app/public/documents/company_slug/year/
+        $companySlug = Str::slug($company->company_name, '_');
+
+// უკეთესი: სახელის გენერაცია
+        $originalName = $file->getClientOriginalName();
+        $filenameWithoutExt = pathinfo($originalName, PATHINFO_FILENAME);
+        $extension = $file->getClientOriginalExtension();
+
+        $storedFileName = time().'_'.Str::slug($filenameWithoutExt, '_').'.'.$extension;
+
+// ფაილის შენახვა PUBLIC დისკზე
+        $path = $file->storeAs(
+            "documents/{$companySlug}/{$year}",
+            $storedFileName,
+            'public' // <<< მნიშვნელოვანი
+        );
+
+// სურვილის მიხედვით შეგიძლიათ ლოგიც:
+        if (! $path) {
+            return back()->withErrors(['file' => 'ფაილი ვერ შეინახა დისკზე.']);
+        }
+
+        $document = Document::create([
+            'company_id'       => $request->company_id,
+            'contract_type_id' => $request->contract_type_id,
+            'year'             => $year,
+            'title'            => $request->title,
+            'file_path'        => $path, // напр. documents/asianet_2025/123_file.pdf
+            'original_name'    => $originalName,
+            'mime_type'        => $file->getMimeType(),
+            'size'             => $file->getSize(),
+            'contract_date'    => $request->contract_date,
+            'uploaded_by'      => Auth::id(),
+        ]);
+
+        return redirect()
+            ->route('documents.index')
+            ->with('success', 'დოკუმენტი წარმატებით აიტვირთა.');
+    }
+
+    public function download(Document $document)
+    {
+        if (empty($document->file_path)) {
+            abort(404, "ფაილის გზა ცარიელია (file_path = NULL)");
+        }
+
+        $disk = Storage::disk('public');
+
+        if (!$disk->exists($document->file_path)) {
+            abort(404, "ფაილი ვერ მოიძებნა დისკზე: " . $document->file_path);
+        }
+
+        return $disk->download($document->file_path, $document->original_name);
+    }
+
+
+
+}
