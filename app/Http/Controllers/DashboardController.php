@@ -12,7 +12,7 @@ class DashboardController extends Controller
 {
     public function index(): View
     {
-        $companies = Company::all();
+        $companies = Company::withCount('documents')->get();
         return view('pages.dashboard',compact('companies'));
     }
 
