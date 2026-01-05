@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
@@ -19,10 +20,18 @@ class Company extends Model
         return $this->morphMany(Translation::class, 'translatable');
     }
 
-    public function documents(): HasMany
+//    public function documents(): HasMany
+//    {
+//        return $this->hasMany(Document::class);
+//    }
+
+    public function documents(): BelongsToMany
     {
-        return $this->hasMany(Document::class);
+        return $this->belongsToMany(Document::class, 'company_documents')
+            ->using(CompanyDocument::class)
+            ->withTimestamps();
     }
+
 
     public function companyName(): Attribute
     {

@@ -7,7 +7,10 @@ use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserProfileController;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+
+
 
 Route::get('/', function () {
     if (\Illuminate\Support\Facades\Auth::check()){
@@ -27,7 +30,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::group(['prefix' => 'documents', 'as' => 'documents.'], function () {
         Route::get('/', [DocumentController::class, 'index'])->name('index');
-        Route::post('/ajax', [CompanyController::class, 'ajax'])->name('ajax');
+        Route::post('/ajax', [DocumentController::class, 'ajax'])->name('ajax');
         Route::get('/download/{document}', [DocumentController::class, 'download'])->name('download');
         Route::get('/create', [DocumentController::class, 'create'])->name('create');
         Route::post('/upload-temp', [DocumentController::class, 'uploadTemp'])->name('uploadTemp');
@@ -36,6 +39,10 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/store', [DocumentController::class, 'storeAjax'])->name('store');
         Route::post('/{id}/update', [CompanyController::class, 'update'])->name('update');
         Route::post('/delete', [CompanyController::class, 'delete'])->name('delete');
+
+        Route::get('/documents/{document}/print', [DocumentController::class, 'print'])
+            ->name('print');
+
     });
 
     Route::group(['prefix' => 'companies', 'as' => 'companies.'], function () {

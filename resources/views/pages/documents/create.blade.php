@@ -1,5 +1,7 @@
 @extends('layouts.app')
-
+@push('css')
+    <link href="{{ asset('/admin/libs/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
+@endpush
 @section('content')
 
     <style>
@@ -28,10 +30,10 @@
 
             <div class="mb-3">
                 <label>კომპანია</label>
-                <select id="company_id" class="form-select">
+                <select id="company_id" class="form-select js-example-basic-multiple" multiple required>
                     <option value="">აირჩიეთ</option>
                     @foreach($companies as $c)
-                        <option value="{{ $c->id }}">{{ $c->company_name }}</option>
+                        <option value="{{ $c->id }}">{{ $c->company_name }} - {{ $c->identification_code }}</option>
                     @endforeach
                 </select>
                 <small class="text-danger d-none" id="err-company_id"></small>
@@ -39,7 +41,7 @@
 
             <div class="mb-3">
                 <label>ხელშეკრულების ტიპი</label>
-                <select id="contract_type_id" class="form-select">
+                <select id="contract_type_id" class="form-select js-example-basic-simple">
                     <option value="">აირჩიეთ</option>
                     @foreach($contractTypes as $t)
                         <option value="{{ $t->id }}">{{ $t->contract_type_name }}</option>
@@ -59,6 +61,12 @@
                     <label>ხელშეკრულების თარიღი</label>
                     <input type="date" id="contract_date" class="form-control">
                     <small class="text-danger d-none" id="err-contract_date"></small>
+                </div>
+
+                <div class="col-4 mb-3">
+                    <label>თანხა</label>
+                    <input type="number" id="year" value="0" class="form-control">
+                    <small class="text-danger d-none" id="err-year"></small>
                 </div>
             </div>
 
@@ -113,6 +121,7 @@
 
 @push('js')
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ asset('admin/libs/select2/js/select2.min.js') }}"></script>
 
     <script>
         $(function () {
@@ -164,6 +173,12 @@
 
                 let formData = new FormData();
                 formData.append("_token", "{{ csrf_token() }}");
+                let companies = $("#company_id").val() || [];
+
+                companies.forEach(function (id) {
+                    formData.append("company_ids[]", id);
+                });
+
                 formData.append("company_id", $("#company_id").val());
                 formData.append("contract_type_id", $("#contract_type_id").val());
                 formData.append("year", $("#year").val());
@@ -180,7 +195,7 @@
 
                     success: function (res) {
                         $("#pdfModal").modal("hide");
-                        $("#success-message").removeClass("d-none").text(res.message);
+                        $("#success-message").removeClass("d-none").html(res.message);
 
                         setTimeout(function () {
                             location.reload();
@@ -193,6 +208,29 @@
                     }
                 });
 
+            });
+
+        });
+
+        $(document).ready(function () {
+            $('.js-example-basic-simple').select2();
+            $('.js-example-basic-multiple').select2({
+                placeholder: "აირჩიეთ კომპანიები"
+            });
+
+            $('.js-example-basic-multiple').on('select2:select', function(e) {
+                let selected = $(this).val() || [];
+
+                if (selected.length > 4) {
+                    selected.pop(); // ბოლო დამატებული წაშალე
+                    $(this).val(selected).trigger('change');
+
+                    $("#err-company_id")
+                        .text("მაქსიმუმ 4 კომპანიის არჩევა შეიძლება")
+                        .removeClass("d-none");
+                } else {
+                    $("#err-company_id").addClass("d-none");
+                }
             });
 
         });

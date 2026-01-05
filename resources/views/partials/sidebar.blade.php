@@ -17,6 +17,13 @@
         </li>
 
         <li>
+            <a href="{{ route('documents.index') }}" class="waves-effect">
+                <i class="bx bx-list-ol"></i>
+                <span>ატვირთული დოკუმენტები</span>
+            </a>
+        </li>
+
+        <li>
             <a href="{{ route('companies.index') }}" class="waves-effect">
                 <i class="bx bx-list-ol"></i>
                 <span>კომპანიები</span>

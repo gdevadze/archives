@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Document extends Model
 {
@@ -17,6 +18,13 @@ class Document extends Model
     {
         return $this->belongsTo(Company::class);
     }
+
+    public function companies(): BelongsToMany
+    {
+        return $this->belongsToMany(Company::class, 'company_documents')
+            ->withTimestamps();
+    }
+
 
 
     public function contractType(): BelongsTo

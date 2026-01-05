@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Company;
 use App\Models\ContractType;
 use App\Models\Document;
+use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -13,6 +15,45 @@ use Illuminate\View\View;
 
 class DocumentController extends Controller
 {
+    public function index(): View
+    {
+        $companies = Company::all();
+        $contractTypes = ContractType::all();
+        return view('pages.documents.index',compact('companies','contractTypes'));
+    }
+
+    public function ajax(Request $request): JsonResponse
+    {
+        $documents = Document::query();
+        $companyIds = $request->company_ids;
+        if ($companyIds){
+            $documents = $documents->whereHas('companies', function ($q) use ($companyIds) {
+                $q->whereIn('companies.id', $companyIds);
+            });
+        }
+        if ($request->contract_type){
+            $documents = $documents->where('contract_type_id',$request->contract_type);
+        }
+        return Datatables()->of($documents)
+            ->addIndexColumn()
+            ->addColumn('company_names', function ($data) {
+                $html = $data->companies->implode('company_name',',<br>');
+                return $html;
+            })
+            ->addColumn('formatted_contract_date', function ($data) {
+                $html = Carbon::parse($data->contract_date)->format('d.m.Y');
+                return $html;
+            })
+            ->addColumn('action', function ($data) {
+                $html = '';
+                $html .= ' <a class="btn btn-primary shadow btn-xs sharp mr-1" href="'. route('documents.download', $data->id) .'"><i class="fa fa-eye"></i></a>';
+
+                return $html;
+            })
+            ->rawColumns(['company_names', 'action'])
+            ->make(true);
+    }
+
     public function create(): View
     {
         $companies     = Company::all();
@@ -97,8 +138,8 @@ class DocumentController extends Controller
 
         $title = getTrx();
 
-        Document::create([
-            'company_id'       => $request->company_id,
+        $document = Document::create([
+//            'company_id'       => $request->company_id,
             'contract_type_id' => $request->contract_type_id,
             'year'             => $year,
 
@@ -113,13 +154,13 @@ class DocumentController extends Controller
             'uploaded_by'      => Auth::id(),
         ]);
 
+        $document->companies()->sync($request->company_ids);
+
         return response()->json([
             'status'  => 'success',
-            'message' => 'დოკუმენტი წარმატებით შეინახა! - დოკუმენტის ნომერი: '.$title
+            'message' => 'დოკუმენტი წარმატებით შეინახა! - დოკუმენტის ნომერი: '.$title.' <a href="'.route('documents.print',$document->id).'">ბეჭდვა</a>'
         ]);
     }
-
-
 
     public function store(Request $request)
     {
@@ -195,6 +236,10 @@ class DocumentController extends Controller
         return $disk->download($document->file_path, $document->original_name);
     }
 
+    public function print(Document $document)
+    {
+        $document->load('companies', 'contractType');
 
-
+        return view('pages.documents.print', compact('document'));
+    }
 }
