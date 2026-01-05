@@ -47,6 +47,7 @@ class DocumentController extends Controller
             ->addColumn('action', function ($data) {
                 $html = '';
                 $html .= ' <a class="btn btn-primary shadow btn-xs sharp mr-1" href="'. route('documents.download', $data->id) .'"><i class="fa fa-eye"></i></a>';
+                $html .= ' <a class="btn btn-primary shadow btn-xs sharp mr-1" href="'. route('documents.print', $data->id) .'"><i class="fa fa-print"></i></a>';
 
                 return $html;
             })
