@@ -95,14 +95,14 @@
         <div>
             <div class="header-title">DOCUMENT ARCHIVE</div>
         </div>
-        <div class="header-sub">{{ $document->contract_date->format('d.m.Y') }}</div>
+        <div class="header-sub">{{ $document->title }}</div>
     </div>
 
     <div class="content">
-        <div><b>დოკ. №:</b> {{ $document->title }}</div>
+        <div><b>დოკ. №:</b> {{ $document->document_no }}</div>
         <div><b>ტიპი:</b> {{ $document->contractType->contract_type_name ?? '-' }}</div>
         <div><b>წელი:</b> {{ $document->year }}</div>
-        <div><b>თარიღი:</b> {{ $document->contract_date }}</div>
+        <div><b>თარიღი:</b> {{ $document->contract_date->format('d.m.Y') }}</div>
 
         <div class="companies">
             <b>კომპანიები:</b>

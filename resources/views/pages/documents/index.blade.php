@@ -10,7 +10,7 @@
           rel="stylesheet" type="text/css"/>
 
     <link href="{{ asset('/admin/libs/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
         table.dataTable td {
             white-space: normal !important;
@@ -45,11 +45,7 @@
                                             aria-label="Close"></button>
                                 </div>
                             @endif
-                            {{--                            <h4 class="card-title">Default Datatable</h4>--}}
-                            {{--                            <p class="card-title-desc">DataTables has most features enabled by--}}
-                            {{--                                default, so all you need to do to use it with your own tables is to call--}}
-                            {{--                                the construction function: <code>$().DataTable();</code>.--}}
-                            {{--                            </p>--}}
+
                             <div class="row mb-3">
 
                                 <div class="form-group col-md-6">
@@ -72,6 +68,21 @@
                                     </select>
                                 </div>
 
+                                <div class="form-group col-md-6">
+                                    <strong>წელი</strong>
+                                    <select class="form-control js-example-basic-simple" id="year">
+                                        <option value="">აირჩიეთ</option>
+                                        @for($i = date('Y'); $i >= 2010; $i--)
+                                            <option value="{{ $i }}">{{ $i }}</option>
+                                        @endfor
+                                    </select>
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    <strong>ხელშეკრულების თარიღი</strong>
+                                    <input type="date" class="form-control" id="contract_date" >
+                                </div>
+
                             </div>
                             <table id="users" class="table table-bordered dt-responsive  nowrap w-100">
                                 <thead>
@@ -80,6 +91,7 @@
                                     <th scope="col">დოკუმენტის ნომერი</th>
                                     <th scope="col">კომპანიები</th>
                                     <th scope="col">ხელშეკრულების თარიღი</th>
+                                    <th scope="col">კომენტარი</th>
                                     <th scope="col">მოქმედება</th>
                                 </tr>
                                 </thead>
@@ -112,6 +124,23 @@
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div>
+
+    <div class="modal fade" id="pdfPreviewModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">PDF Preview</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body p-0">
+                    <iframe id="pdfViewer" src="" style="width:100%;height:80vh;border:0;"></iframe>
+                </div>
+
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('js')
@@ -142,6 +171,36 @@
             $('.js-example-basic-multiple').select2();
         });
     </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/index.js"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/ka.js"></script>
+
+    <script>
+        $(document).ready(function () {
+
+            flatpickr("#contract_date", {
+                "locale": "ka",
+                altInput: true,
+                altFormat: "d.m.Y",
+                dateFormat: "Y-m-d",
+            });
+            flatpickr("#end_date", {
+                "locale": "ka",
+                altInput: true,
+                altFormat: "d.m.Y",
+                dateFormat: "Y-m-d",
+            });
+        });
+
+        function previewPDF(url) {
+            document.getElementById('pdfViewer').src = url;
+            let modal = new bootstrap.Modal(document.getElementById('pdfPreviewModal'));
+            modal.show();
+        }
+
+    </script>
+
     <script>
         let table;
         let save_method;
@@ -161,6 +220,8 @@
                         d._token = '{{ csrf_token() }}'
                         d.company_ids = companies
                         d.contract_type = $('#contract_type').val()
+                        d.contract_date = $('#contract_date').val()
+                        d.year = $('#year').val()
                     }
                 },
                 columns: [
@@ -168,6 +229,7 @@
                     {data: 'title', name: 'title'},
                     {data: 'company_names', name: 'title'},
                     {data: 'formatted_contract_date', name: 'contract_date'},
+                    {data: 'comment', name: 'comment'},
                     {data: 'action', name: 'action'},
                 ]
             });
@@ -184,6 +246,14 @@
             });
 
             $('#contract_type').on('change', function () {
+                table.draw();
+            });
+
+            $('#year').on('change', function () {
+                table.draw();
+            });
+
+            $('#contract_date').on('change', function () {
                 table.draw();
             });
         });

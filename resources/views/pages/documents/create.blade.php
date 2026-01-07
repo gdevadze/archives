@@ -27,30 +27,41 @@
         <h3 class="mb-4">დოკუმენტის დამატება</h3>
 
         <div class="card p-4 shadow-sm">
-
-            <div class="mb-3">
-                <label>კომპანია</label>
-                <select id="company_id" class="form-select js-example-basic-multiple" multiple required>
-                    <option value="">აირჩიეთ</option>
-                    @foreach($companies as $c)
-                        <option value="{{ $c->id }}">{{ $c->company_name }} - {{ $c->identification_code }}</option>
-                    @endforeach
-                </select>
-                <small class="text-danger d-none" id="err-company_id"></small>
-            </div>
-
-            <div class="mb-3">
-                <label>ხელშეკრულების ტიპი</label>
-                <select id="contract_type_id" class="form-select js-example-basic-simple">
-                    <option value="">აირჩიეთ</option>
-                    @foreach($contractTypes as $t)
-                        <option value="{{ $t->id }}">{{ $t->contract_type_name }}</option>
-                    @endforeach
-                </select>
-                <small class="text-danger d-none" id="err-contract_type_id"></small>
-            </div>
-
             <div class="row">
+                <div class="mb-3">
+                    <label>კომპანია</label>
+                    <select id="company_id" class="form-select js-example-basic-multiple" multiple required>
+                        <option value="">აირჩიეთ</option>
+                        @foreach($companies as $c)
+                            <option value="{{ $c->id }}">{{ $c->company_name }} - {{ $c->identification_code }}</option>
+                        @endforeach
+                    </select>
+                    <small class="text-danger d-none" id="err-company_id"></small>
+                </div>
+
+                <div class="col-4 mb-3">
+                    <label>ხელშეკრულების ტიპი</label>
+                    <select id="contract_type_id" class="form-select js-example-basic-simple">
+                        <option value="">აირჩიეთ</option>
+                        @foreach($contractTypes as $t)
+                            <option value="{{ $t->id }}">{{ $t->contract_type_name }}</option>
+                        @endforeach
+                    </select>
+                    <small class="text-danger d-none" id="err-contract_type_id"></small>
+                </div>
+
+                <div class="col-4 mb-3">
+                    <label>კომენტარი</label>
+                    <input type="text" id="comment" value="" class="form-control">
+{{--                    <small class="text-danger d-none" id="err-year"></small>--}}
+                </div>
+
+                <div class="col-4 mb-3">
+                    <label>დოკუმენტის ნომერი</label>
+                    <input type="text" id="document_no" value="" class="form-control">
+{{--                    <small class="text-danger d-none" id="err-year"></small>--}}
+                </div>
+
                 <div class="col-4 mb-3">
                     <label>წელი</label>
                     <input type="number" id="year" value="{{ date('Y') }}" class="form-control">
@@ -183,6 +194,8 @@
                 formData.append("contract_type_id", $("#contract_type_id").val());
                 formData.append("year", $("#year").val());
                 formData.append("contract_date", $("#contract_date").val());
+                formData.append("comment", $("#comment").val());
+                formData.append("document_no", $("#document_no").val());
                 formData.append("temp_file", $("#temp_file").val());
                 formData.append("file_original_name", $("#file_original_name").val());
 

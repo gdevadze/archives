@@ -34,6 +34,12 @@ class DocumentController extends Controller
         if ($request->contract_type){
             $documents = $documents->where('contract_type_id',$request->contract_type);
         }
+        if ($request->year){
+            $documents = $documents->where('year',$request->year);
+        }
+        if ($request->contract_date){
+            $documents = $documents->where('contract_date',$request->contract_date);
+        }
         return Datatables()->of($documents)
             ->addIndexColumn()
             ->addColumn('company_names', function ($data) {
@@ -46,7 +52,8 @@ class DocumentController extends Controller
             })
             ->addColumn('action', function ($data) {
                 $html = '';
-                $html .= ' <a class="btn btn-primary shadow btn-xs sharp mr-1" href="'. route('documents.download', $data->id) .'"><i class="fa fa-eye"></i></a>';
+                $html .= ' <a class="btn btn-primary shadow btn-xs sharp mr-1" href="javascript:void()" onclick="previewPDF(\'' . Storage::url($data->file_path) . '\')"><i class="fa fa-eye"></i></a>';
+                $html .= ' <a class="btn btn-primary shadow btn-xs sharp mr-1" href="'. route('documents.download', $data->id) .'"><i class="fa fa-download"></i></a>';
                 $html .= ' <a class="btn btn-primary shadow btn-xs sharp mr-1" href="'. route('documents.print', $data->id) .'"><i class="fa fa-print"></i></a>';
 
                 return $html;
@@ -98,6 +105,8 @@ class DocumentController extends Controller
             'contract_type_id'  => 'required|exists:contract_types,id',
             'year'              => 'required|digits:4',
             'contract_date'     => 'nullable|date',
+            'comment'     => 'nullable',
+            'document_no'     => 'nullable',
             'file_original_name'=> 'required|string',
             'temp_file'         => 'required|string'
         ]);
@@ -137,7 +146,7 @@ class DocumentController extends Controller
         // გადატანა temp → documents
         rename($tempPath, $finalPath);
 
-        $title = getTrx();
+        $title = Carbon::parse($request->contract_date)->format('d-m-Y').'-'.getTrx(3);
 
         $document = Document::create([
 //            'company_id'       => $request->company_id,
@@ -146,6 +155,8 @@ class DocumentController extends Controller
 
             // TITLE არის "ორიგინალი სახელი" (example.pdf)
             'title'            => $title,
+            'comment'          => $request->comment,
+            'document_no'      => $request->document_no,
 
             'file_path'        => "documents/{$companySlug}/{$year}/{$finalName}",
             'original_name'    => $original,
