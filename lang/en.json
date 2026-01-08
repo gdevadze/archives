@@ -1,3 +1,24 @@
 {
-    "companies": "Companies"
+    "dashboard": "Dashboard",
+    "upload_document": "Upload Document",
+    "uploaded_documents": "Uploaded Documents",
+    "pending_documents": "Pending Documents",
+    "trash_documents": "Deleted Documents",
+    "companies": "Companies",
+    "contract_types": "Contract Types",
+    "users": "Users",
+    "roles": "Roles",
+    "company": "Company",
+    "choose": "Choose",
+    "choose_companies": "Choose Companies",
+    "contract_type": "Contract Type",
+    "comment": "Comment",
+    "document_no": "Document Number",
+    "year": "Year",
+    "contract_date": "Contract Date",
+    "amount": "Amount",
+    "file_name": "File Name",
+    "filter": "Filter",
+    "delete": "Delete",
+    "reports": "Reports"
 }

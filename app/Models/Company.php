@@ -35,7 +35,7 @@ class Company extends Model
 
     public function companyName(): Attribute
     {
-        $locale = app()->getLocale();
+        $locale = 'ka';
         $translation = $this->translations()->where('locale', $locale)->where('content->company_name', '!=', null)->first();
         return new Attribute(
             get: fn() => $translation ? $translation->content['company_name'] : ''

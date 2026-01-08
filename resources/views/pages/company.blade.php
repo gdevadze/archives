@@ -75,7 +75,7 @@
                     <form method="GET" class="row g-3">
 
                         <div class="col-md-3">
-                            <label class="form-label small">დოკუმენტის ტიპი</label>
+                            <label class="form-label small">@lang('contract_type')</label>
                             <select name="contract_type_id" class="form-select js-example-basic-simple">
                                 <option value="">ყველა</option>
                                 @foreach($contractTypes as $type)
@@ -88,7 +88,7 @@
                         </div>
 
                         <div class="col-md-3">
-                            <label class="form-label small">წელი</label>
+                            <label class="form-label small">@lang('year')</label>
                             <select name="year" class="form-select">
                                 <option value="">ყველა</option>
                                 @for($y = date('Y'); $y >= 1990; $y--)
@@ -100,14 +100,14 @@
                         </div>
 
                         <div class="col-md-4">
-                            <label class="form-label small">ფაილის დასახელება</label>
+                            <label class="form-label small">@lang('file_name')</label>
                             <input type="text" name="q" value="{{ request('q') }}"
                                    class="form-control" placeholder="მოძებნე დოკუმენტი...">
                         </div>
 
                         <div class="col-md-2 d-flex align-items-end">
                             <button class="btn btn-primary w-100">
-                                <i class="bi bi-funnel"></i> ფილტრაცია
+                                <i class="bi bi-funnel"></i> @lang('filter')
                             </button>
                         </div>
 
@@ -181,7 +181,7 @@
                                     @csrf
                                     @method('DELETE')
                                     <button class="btn btn-sm btn-outline-danger">
-                                        წაშლა
+                                        @lang('delete')
                                     </button>
                                 </form>
 
