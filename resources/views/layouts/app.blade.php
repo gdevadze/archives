@@ -88,12 +88,12 @@
                     </button>
                     <div class="dropdown-menu dropdown-menu-end">
 
-                        <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="en">
-                            <img src="{{ asset('admin/images/flags/ka.jpg') }}" alt="user-image" class="me-1" height="12"> <span
+                        <a href="{{ route('locale','ka') }}" class="dropdown-item notify-item language" data-lang="en">
+                            <img src="{{ asset('admin/images/flags/'.currentLocale().'.jpg') }}" alt="user-image" class="me-1" height="12"> <span
                                 class="align-middle">ქართული</span>
                         </a>
-                        <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="en">
-                            <img src="{{ asset('admin/images/flags/en.jpg') }}" alt="user-image" class="me-1" height="12"> <span
+                        <a href="{{ route('locale','en') }}" class="dropdown-item notify-item language" data-lang="en">
+                            <img src="{{ asset('admin/images/flags/'.currentLocale().'.jpg') }}" alt="user-image" class="me-1" height="12"> <span
                                 class="align-middle">English</span>
                         </a>
                         {{--                        <!-- item-->--}}

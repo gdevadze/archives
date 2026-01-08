@@ -5,56 +5,70 @@
         <li>
             <a href="{{ route('dashboard') }}" class="waves-effect">
                 <i class="bx bx-home-circle"></i>
-                <span>მთავარი</span>
+                <span>@lang('dashboard')</span>
             </a>
         </li>
 
         <li>
             <a href="{{ route('documents.create') }}" class="waves-effect">
                 <i class="bx bx-list-ol"></i>
-                <span>დოკუმენტის ატვირთვა</span>
+                <span>@lang('upload_document')</span>
             </a>
         </li>
 
         <li>
             <a href="{{ route('documents.index') }}" class="waves-effect">
                 <i class="bx bx-list-ol"></i>
-                <span>ატვირთული დოკუმენტები</span>
+                <span>@lang('uploaded_documents')</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ route('document.changes.index') }}" class="waves-effect">
+                <i class="bx bx-list-ol"></i>
+                <span>@lang('pending_documents')</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ route('documents.trash') }}" class="waves-effect">
+                <i class="bx bx-list-ol"></i>
+                <span>@lang('trash_documents')</span>
             </a>
         </li>
 
         <li>
             <a href="{{ route('companies.index') }}" class="waves-effect">
                 <i class="bx bx-list-ol"></i>
-                <span>კომპანიები</span>
+                <span>@lang('companies')</span>
             </a>
         </li>
 
         <li>
             <a href="{{ route('contract_types.index') }}" class="waves-effect">
                 <i class="bx bx-list-ol"></i>
-                <span>ხელშეკრულების ტიპები</span>
+                <span>@lang('contract_types')</span>
             </a>
         </li>
 
         <li>
             <a href="{{ route('users.index') }}" class="waves-effect">
                 <i class="bx bx-list-ol"></i>
-                <span>მომხმარებლები</span>
+                <span>@lang('users')</span>
             </a>
         </li>
 
         <li>
             <a href="{{ route('roles.index') }}" class="waves-effect">
                 <i class="bx bx-list-ol"></i>
-                <span>უფლებები</span>
+                <span>@lang('roles')</span>
             </a>
         </li>
 
         <li>
             <a href="{{ route('reports.documents') }}" class="waves-effect">
                 <i class="bx bx-list-ol"></i>
-                <span>რეპორტები</span>
+                <span>@lang('reports')</span>
             </a>
         </li>
 

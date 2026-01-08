@@ -10,13 +10,21 @@
           rel="stylesheet" type="text/css"/>
 
     <style>
-        .company-card {
+        .company-row {
             transition: 0.25s;
-            border-radius: 12px;
+            border-radius: 10px;
         }
-        .company-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+
+        .company-row:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+        }
+
+        .company-logo {
+            width: 48px;
+            height: 48px;
+            font-size: 14px;
+            letter-spacing: 1px;
         }
     </style>
 @endpush
@@ -24,31 +32,45 @@
     <div class="page-content">
         <div class="container-fluid">
             <div class="row">
-                <h2 class="fw-bold mb-4">კომპანიები</h2>
+                <h2 class="fw-bold mb-4">@lang('companies')</h2>
 
                 <div class="row">
                     @foreach($companies as $company)
-                        <div class="col-md-4 col-xl-3 p-3">
+                        <div class="col-md-6 col-lg-4 mb-3">
                             <a href="{{ route('company', $company->id) }}" class="text-decoration-none">
-                                <div class="card shadow-sm border-0 company-card h-100">
-                                    <div class="card-body text-center p-4">
+                                <div class="card border-0 shadow-sm company-row h-100">
+                                    <div class="card-body d-flex align-items-center justify-content-between p-3">
 
-                                        <div class="icon bg-primary bg-opacity-25 rounded-circle mb-3 d-flex
-        justify-content-center align-items-center text-primary fw-bold shadow-sm"
-                                             style="width:70px;height:70px;margin:auto; font-size:20px; letter-spacing:1px;">
-                                            {{ strtoupper($company->code ?? substr($company->name, 0, 2)) }}
+                                        <!-- LEFT -->
+                                        <div class="d-flex align-items-center gap-3">
+
+                                            <!-- Logo / Initial -->
+                                            <div class="company-logo bg-primary bg-opacity-10 text-primary fw-bold
+                                        d-flex align-items-center justify-content-center rounded-circle">
+                                                {{ strtoupper($company->code ?? mb_substr($company->company_name, 0, 2)) }}
+                                            </div>
+
+                                            <!-- Info -->
+                                            <div>
+                                                <div class="fw-semibold text-dark">
+                                                    {{ $company->company_name }}
+                                                </div>
+
+                                                @if($company->identification_code)
+                                                    <div class="text-muted small">
+                                                        ს/ნ: {{ $company->identification_code }}
+                                                    </div>
+                                                @endif
+                                            </div>
+
                                         </div>
 
-
-                                        <h5 class="fw-bold text-dark">{{ $company->company_name }}</h5>
-
-                                        @if($company->identification_code)
-                                            <p class="text-muted small mt-1">ს/ნ: {{ $company->identification_code }}</p>
-                                        @endif
-
-                                        <div class="mt-2 small text-secondary">
-                                            <i class="bi bi-folder"></i>
-                                            {{ $company->documents_count }} დოკუმენტი
+                                        <!-- RIGHT: Documents count -->
+                                        <div class="text-end">
+                            <span class="badge bg-light text-dark border">
+                                <i class="bi bi-folder2-open me-1"></i>
+                                {{ $company->documents_count }}
+                            </span>
                                         </div>
 
                                     </div>
@@ -57,6 +79,8 @@
                         </div>
                     @endforeach
                 </div>
+
+
                 <!-- end col -->
 
 

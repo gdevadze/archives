@@ -165,6 +165,23 @@
                                     <i class="bi bi-download"></i>
                                 </a>
 
+                                {{-- DOWNLOAD --}}
+                                <a href="{{ route('documents.requestChange', $doc->id) }}"
+                                   class="btn btn-primary btn-sm">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+
+                                <form method="POST"
+                                      action="{{ route('documents.destroy', $doc->id) }}"
+                                      onsubmit="return confirm('დოკუმენტის წაშლა გსურთ?')"
+                                      class="d-inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="btn btn-sm btn-outline-danger">
+                                        წაშლა
+                                    </button>
+                                </form>
+
                             </div>
 
                         </div>

@@ -1,0 +1,21 @@
+{
+    "dashboard": "მთავარი",
+    "upload_document": "დოკუმენტის ატვირთვა",
+    "uploaded_documents": "ატვირთული დოკუმენტები",
+    "pending_documents": "დასადასტურებელი დოკუმენტები",
+    "trash_documents": "წაშლილი დოკუმენტები",
+    "companies": "კომპანიები",
+    "contract_types": "ხელშეკრულების ტიპები",
+    "users": "მომხმარებლები",
+    "roles": "უფლებები",
+    "company": "კომპანია",
+    "choose": "აირჩიეთ",
+    "choose_companies": "აირჩიეთ კომპანიები",
+    "contract_type": "ხელშეკრულების ტიპი",
+    "comment": "კომენტარი",
+    "document_no": "დოკუმენტის ნომერი",
+    "year": "წელი",
+    "contract_date": "ხელშეკრულების თარიღი",
+    "amount": "თანხა",
+    "reports": "რეპორტები"
+}

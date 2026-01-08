@@ -5,9 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Document extends Model
 {
+    use SoftDeletes;
     protected $guarded = [];
 
     protected $casts = [
@@ -25,7 +28,10 @@ class Document extends Model
             ->withTimestamps();
     }
 
-
+    public function changes(): HasMany
+    {
+        return $this->hasMany(DocumentChange::class);
+    }
 
     public function contractType(): BelongsTo
     {

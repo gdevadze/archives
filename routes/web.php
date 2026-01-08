@@ -3,11 +3,13 @@
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ContractTypeController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DocumentChangeController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserProfileController;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
@@ -22,8 +24,14 @@ Route::get('/', function () {
 
 Auth::routes(['register' => false]);
 
+Route::get('locale/{locale}', function ($locale) {
+    session(['locale' => $locale]);
+    App::setLocale($locale);
+    return redirect()->back();
+})->name('locale');
+
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'locale'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/company/{id}', [DashboardController::class, 'company'])->name('company');
     Route::get('/change-password', [UserProfileController::class, 'changePassword'])->name('change.password');
@@ -41,9 +49,49 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/{id}/update', [CompanyController::class, 'update'])->name('update');
         Route::post('/delete', [CompanyController::class, 'delete'])->name('delete');
 
+        Route::get('/{document}/request-change', [DocumentController::class, 'requestChange'])->name('requestChange');
+        Route::post('/{document}/update-request-change', [DocumentController::class, 'updateRequestChange'])->name('update.requestChange');
+
+
         Route::get('/documents/{document}/print', [DocumentController::class, 'print'])
             ->name('print');
 
+        Route::delete('/{document}',
+            [DocumentController::class, 'destroy']
+        )->name('destroy');
+
+        Route::get('/trash',
+            [DocumentController::class, 'trash']
+        )->name('trash');
+
+        Route::post('/{id}/restore',
+            [DocumentController::class, 'restore']
+        )->name('restore');
+
+        // Force delete
+        Route::delete('/{id}/force-delete',
+            [DocumentController::class, 'forceDelete']
+        )->name('forceDelete');
+
+
+    });
+
+    Route::group(['prefix' => 'document/changes', 'as' => 'document.changes.'], function () {
+        Route::get('/pending',
+            [DocumentChangeController::class, 'index']
+        )->name('index');
+
+        Route::get('/{change}',
+            [DocumentChangeController::class, 'show']
+        )->name('show');
+
+        Route::post('/{change}/approve',
+            [DocumentChangeController::class, 'approve']
+        )->name('approve');
+
+        Route::post('/{change}/reject',
+            [DocumentChangeController::class, 'reject']
+        )->name('reject');
     });
 
     Route::group(['prefix' => 'companies', 'as' => 'companies.'], function () {

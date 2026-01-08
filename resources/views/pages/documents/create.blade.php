@@ -24,14 +24,14 @@
 
     <div class="page-content">
         <div class="container-fluid">
-        <h3 class="mb-4">დოკუმენტის დამატება</h3>
+        <h3 class="mb-4">@lang('upload_document')</h3>
 
         <div class="card p-4 shadow-sm">
             <div class="row">
                 <div class="mb-3">
-                    <label>კომპანია</label>
+                    <label>@lang('company')</label>
                     <select id="company_id" class="form-select js-example-basic-multiple" multiple required>
-                        <option value="">აირჩიეთ</option>
+                        <option value="">@lang('choose_companies')</option>
                         @foreach($companies as $c)
                             <option value="{{ $c->id }}">{{ $c->company_name }} - {{ $c->identification_code }}</option>
                         @endforeach
@@ -40,9 +40,9 @@
                 </div>
 
                 <div class="col-4 mb-3">
-                    <label>ხელშეკრულების ტიპი</label>
+                    <label>@lang('contract_type')</label>
                     <select id="contract_type_id" class="form-select js-example-basic-simple">
-                        <option value="">აირჩიეთ</option>
+                        <option value="">@lang('choose')</option>
                         @foreach($contractTypes as $t)
                             <option value="{{ $t->id }}">{{ $t->contract_type_name }}</option>
                         @endforeach
@@ -51,32 +51,36 @@
                 </div>
 
                 <div class="col-4 mb-3">
-                    <label>კომენტარი</label>
+                    <label>@lang('comment')</label>
                     <input type="text" id="comment" value="" class="form-control">
 {{--                    <small class="text-danger d-none" id="err-year"></small>--}}
                 </div>
 
                 <div class="col-4 mb-3">
-                    <label>დოკუმენტის ნომერი</label>
+                    <label>@lang('document_no')</label>
                     <input type="text" id="document_no" value="" class="form-control">
 {{--                    <small class="text-danger d-none" id="err-year"></small>--}}
                 </div>
 
                 <div class="col-4 mb-3">
-                    <label>წელი</label>
-                    <input type="number" id="year" value="{{ date('Y') }}" class="form-control">
+                    <label>@lang('year')</label>
+                    <select class="form-control js-example-basic-simple" id="year">
+                        @for($i = date('Y'); $i >= 2010; $i--)
+                            <option value="{{ $i }}" @selected(date('Y') == $i)>{{ $i }}</option>
+                        @endfor
+                    </select>
                     <small class="text-danger d-none" id="err-year"></small>
                 </div>
 
                 <div class="col-4 mb-3">
-                    <label>ხელშეკრულების თარიღი</label>
+                    <label>@lang('contract_date')</label>
                     <input type="date" id="contract_date" class="form-control">
                     <small class="text-danger d-none" id="err-contract_date"></small>
                 </div>
 
                 <div class="col-4 mb-3">
-                    <label>თანხა</label>
-                    <input type="number" id="year" value="0" class="form-control">
+                    <label>@lang('amount')</label>
+                    <input type="number" id="amount" value="0" class="form-control">
                     <small class="text-danger d-none" id="err-year"></small>
                 </div>
             </div>
@@ -146,8 +150,8 @@
                 let file = this.files[0];
                 if (!file) return;
 
-                if (file.size > 50 * 1024 * 1024) {
-                    $("#err-file").text("ფაილის ზომა 50MB–ს არ უნდა აღემატებოდეს!").removeClass("d-none");
+                if (file.size > 5 * 1024 * 1024) {
+                    $("#err-file").text("ფაილის ზომა 5MB–ს არ უნდა აღემატებოდეს!").removeClass("d-none");
                     return;
                 }
 
@@ -195,6 +199,7 @@
                 formData.append("year", $("#year").val());
                 formData.append("contract_date", $("#contract_date").val());
                 formData.append("comment", $("#comment").val());
+                formData.append("amount", $("#amount").val());
                 formData.append("document_no", $("#document_no").val());
                 formData.append("temp_file", $("#temp_file").val());
                 formData.append("file_original_name", $("#file_original_name").val());

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Company;
 use App\Models\ContractType;
 use App\Models\Document;
+use App\Models\DocumentChange;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -107,6 +108,7 @@ class DocumentController extends Controller
             'contract_date'     => 'nullable|date',
             'comment'     => 'nullable',
             'document_no'     => 'nullable',
+            'amount'     => 'nullable',
             'file_original_name'=> 'required|string',
             'temp_file'         => 'required|string'
         ]);
@@ -157,6 +159,7 @@ class DocumentController extends Controller
             'title'            => $title,
             'comment'          => $request->comment,
             'document_no'      => $request->document_no,
+            'amount'           => $request->amount,
 
             'file_path'        => "documents/{$companySlug}/{$year}/{$finalName}",
             'original_name'    => $original,
@@ -248,10 +251,108 @@ class DocumentController extends Controller
         return $disk->download($document->file_path, $document->original_name);
     }
 
+    public function requestChange(Document $document)
+    {
+        $companies     = Company::all();
+        $contractTypes = ContractType::all();
+        return view('pages.documents.edit',compact('document','companies','contractTypes'));
+    }
+
+    public function updateRequestChange(Request $request, Document $document)
+    {
+        $data = $request->only([
+            'contract_type_id',
+            'year',
+            'contract_date',
+            'comment',
+            'document_no',
+            'amount',
+        ]);
+
+        $old = $document->only(array_keys($data));
+
+        if ($old == $data) {
+            return response()->json([
+                'message' => 'ცვლილება არ დაფიქსირდა'
+            ]);
+        }
+
+        $document->changes()->create([
+            'old_data' => $old,
+            'new_data' => $data,
+            'requested_by' => auth()->id(),
+        ]);
+
+//        $document->update(['status' => 'pending_change']);
+
+        return response()->json([
+            'message' => 'ცვლილება გადაგზავნილია დასადასტურებლად'
+        ]);
+    }
+
+    public function changesShow(DocumentChange $change)
+    {
+        $change->load(['document', 'requester']);
+//        return $change;
+        $contractTypes = ContractType::all()->keyBy('id');
+
+        return view('pages.documents.changes.show', compact('change', 'contractTypes'));
+    }
+
     public function print(Document $document)
     {
         $document->load('companies', 'contractType');
 
         return view('pages.documents.print', compact('document'));
     }
+
+    public function destroy(Document $document)
+    {
+        $document->delete();
+
+        return back()->with('success', 'დოკუმენტი წაშლილია (შესაძლებელია აღდგენა)');
+    }
+
+    public function trash()
+    {
+        $documents = Document::onlyTrashed()
+            ->with(['companies', 'contractType'])
+            ->latest('deleted_at')
+            ->paginate(20);
+
+        return view('pages.documents.trash', compact('documents'));
+    }
+
+    public function restore($id)
+    {
+        $document = Document::onlyTrashed()->findOrFail($id);
+        $document->restore();
+
+        return back()->with('success', 'დოკუმენტი აღდგენილია');
+    }
+
+    /**
+     * Permanent delete (DB + File)
+     */
+    public function forceDelete($id)
+    {
+        $document = Document::onlyTrashed()->findOrFail($id);
+
+        // ფაილის წაშლა storage-დან
+        if ($document->file_path && Storage::disk('public')->exists($document->file_path)) {
+            Storage::disk('public')->delete($document->file_path);
+        }
+
+        // pivot cleanup
+        $document->companies()->detach();
+
+        // change history წაშლა (ან შეგიძლია დატოვო)
+        $document->changes()->delete();
+
+        $document->forceDelete();
+
+        return back()->with('success', 'დოკუმენტი სრულად წაიშალა');
+    }
+
+
 }
