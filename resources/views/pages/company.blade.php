@@ -1,8 +1,7 @@
 @extends('layouts.app')
 @push('css')
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-@endpush
-@section('content')
+    <link href="{{ asset('/admin/libs/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
 
     <style>
         .doc-card {
@@ -58,6 +57,10 @@
             margin-bottom: 12px;
         }
     </style>
+@endpush
+@section('content')
+
+
 
     <div class="page-content">
         <div class="container-fluid">
@@ -73,7 +76,7 @@
 
                         <div class="col-md-3">
                             <label class="form-label small">დოკუმენტის ტიპი</label>
-                            <select name="contract_type_id" class="form-select">
+                            <select name="contract_type_id" class="form-select js-example-basic-simple">
                                 <option value="">ყველა</option>
                                 @foreach($contractTypes as $type)
                                     <option value="{{ $type->id }}"
@@ -221,5 +224,13 @@
             let modal = new bootstrap.Modal(document.getElementById('pdfPreviewModal'));
             modal.show();
         }
+    </script>
+
+    <script src="{{ asset('admin/libs/select2/js/select2.min.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+            $('.js-example-basic-simple').select2();
+            $('.js-example-basic-multiple').select2();
+        });
     </script>
 @endpush
