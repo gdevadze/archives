@@ -13,8 +13,8 @@
         }
 
         .label {
-            width: 450px;   /* ~105mm */
-            height: 400px;  /* ~65mm */
+            width: 430px;   /* ~105mm */
+            height: 355px;  /* ~65mm */
             background: #fff;
             border-radius: 10px;
             border: 2px solid #111827;
@@ -127,7 +127,7 @@
     JsBarcode("#barcode", "{{ $document->title }}", {
 
         width: 2,
-        height: 140,
+        height: 122,
         displayValue: false,
         margin: 15
     });
