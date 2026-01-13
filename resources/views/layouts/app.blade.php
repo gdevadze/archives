@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="S & I Group Admin Panel" name="description"/>
     <!-- App favicon -->
-    <link rel="icon" type="image/png" href="https://s-igroup.ge/front/img/logo.png" />
+    <link rel="icon" type="image/png" href="https://metroholding.ge/assets/images/logo-dark.png" />
 
     <!-- Bootstrap Css -->
     <link href="{{ asset('admin/css/bootstrap.min.css') }}" id="bootstrap-style" rel="stylesheet" type="text/css"/>

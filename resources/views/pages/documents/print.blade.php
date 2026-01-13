@@ -13,8 +13,8 @@
         }
 
         .label {
-            width: 420px;   /* ~105mm */
-            height: 260px;  /* ~65mm */
+            width: 450px;   /* ~105mm */
+            height: 400px;  /* ~65mm */
             background: #fff;
             border-radius: 10px;
             border: 2px solid #111827;
@@ -40,21 +40,23 @@
         }
 
         .header-sub {
-            font-size: 11px;
+            font-size: 18px;
             color: #6b7280;
+            font-weight: 700;
         }
 
         .content {
-            font-size: 12px;
+            font-size: 16px;
             line-height: 1.5;
         }
 
         .content b {
             color: #111827;
+
         }
 
         .companies {
-            font-size: 11px;
+            font-size: 15px;
             color: #374151;
             margin-top: 4px;
         }
@@ -99,14 +101,14 @@
     </div>
 
     <div class="content">
-        <div><b>დოკ. №:</b> {{ $document->document_no }}</div>
-        <div><b>ტიპი:</b> {{ $document->contractType->contract_type_name ?? '-' }}</div>
-        <div><b>წელი:</b> {{ $document->year }}</div>
-        <div><b>თარიღი:</b> {{ $document->contract_date->format('d.m.Y') }}</div>
+        <div><b>დოკ. №: {{ $document->document_no }}</div></b>
+        <div><b>ტიპი: {{ $document->contractType->contract_type_name ?? '-' }}</div></b>
+        <div><b>წელი: {{ $document->year }}</div></b>
+        <div><b>თარიღი: {{ $document->contract_date->format('d.m.Y') }}</div></b>
 
         <div class="companies">
-            <b>კომპანიები:</b>
-            {{ $document->companies->pluck('company_name')->join(', ') }}
+            <b>კომპანიები:
+            {{ $document->companies->pluck('company_name')->join(', ') }}</b>
         </div>
     </div>
 
@@ -122,12 +124,12 @@
 </div>
 
 <script>
-    JsBarcode("#barcode", "{{ $document->id }}", {
+    JsBarcode("#barcode", "{{ $document->title }}", {
 
         width: 2,
-        height: 70,
+        height: 140,
         displayValue: false,
-        margin: 0
+        margin: 15
     });
 </script>
 

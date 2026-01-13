@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Company;
+use App\Models\ContractType;
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -61,14 +64,14 @@ class UserController extends Controller
 
             ->addColumn('action', function ($data) {
                 $btn = '';
-//                $btn = '<a class="btn btn-primary shadow btn-xs sharp mr-1 btn-blnc" href="javascript:void(0)" onclick="balanceAction('.$data->id.')" data-status="balance-plus"><i class="fa fa-plus"></i></a>';
-                $btn .= ' <a class="btn btn-primary shadow btn-xs sharp mr-1" href="' . route("users.edit",$data->id) . '"><i class="fa fa-edit"></i></a>';
+                $btn = '<a class="btn btn-primary shadow btn-xs sharp mr-1" href="' . route("users.report.settings",$data->id) . '" data-bs-toggle="tooltip" data-bs-placement="top" title="რეპორტის პარამეტრები" data-status="balance-plus"><i class="fa fa-list"></i></a>';
+                $btn .= ' <a class="btn btn-primary shadow btn-xs sharp mr-1" href="' . route("users.edit",$data->id) . '" data-bs-toggle="tooltip" data-bs-placement="top" title="რედაქტირება"><i class="fa fa-edit"></i></a>';
                 if($data->status == 1){
                     $btn .= ' <a class="btn btn-danger shadow btn-xs sharp mr-1" href="javascript:void(0)" onclick="disableUser(' . $data->id . ')"><i class="fa fa-times"></i></a>';
                 }
 
 //                if (currentUser()->can('user-delete')) {
-                $btn .= ' <a class="btn btn-danger shadow btn-xs sharp mr-1" href="javascript:void(0)" onclick="deleteUser(' . $data->id . ')"><i class="fa fa-trash"></i></a>';
+//                $btn .= ' <a class="btn btn-danger shadow btn-xs sharp mr-1" href="javascript:void(0)" onclick="deleteUser(' . $data->id . ')"><i class="fa fa-trash"></i></a>';
 //                }
                 return $btn;
             })
@@ -135,7 +138,8 @@ class UserController extends Controller
     public function create(): View
     {
         $roles = Role::where('name','!=','System Administrator')->pluck('name', 'name')->all();
-        return view('pages.users.create', compact('roles'));
+        $companies = Company::all();
+        return view('pages.users.create', compact('roles','companies'));
     }
 
     public function store(Request $request)
@@ -143,8 +147,8 @@ class UserController extends Controller
         $this->validate($request, [
             'name' => 'required',
             'surname' => 'required',
-            'department_id' => 'required',
-//            'tel' => 'required',
+
+            'tel' => 'required',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|same:confirm-password',
             'roles' => 'required'
@@ -156,7 +160,17 @@ class UserController extends Controller
         $user = User::create($input);
         $user->assignRole($request->input('roles'));
 
-        return redirect()->to(route('admin.users.index'))
+        $companiesData = [];
+
+        foreach ($request->input('companies', []) as $companyId => $settings) {
+            $companiesData[$companyId] = [
+                'receive_report' => false,
+            ];
+        }
+
+        $user->companies()->sync($companiesData);
+
+        return redirect()->to(route('users.index'))
             ->with('success', 'მომხმარებელი წარმატებით დარეგისტრირდა');
     }
 
@@ -178,14 +192,6 @@ class UserController extends Controller
         return jsonResponse(['status' => 0,'html' => view('admin.general.users.relation_data',compact('users','orders','id'))->render()]);
     }
 
-    public function customerBalancesAjax()
-    {
-        return Datatables()->of(CustomerBalance::query()->with('user','create_user')->latest())
-            ->addIndexColumn()
-            ->rawColumns(['role', 'action'])
-            ->make(true);
-    }
-
     public function show($id)
     {
         $user = User::find($id);
@@ -201,11 +207,51 @@ class UserController extends Controller
         return view('pages.users.edit', compact('user', 'roles', 'userRole'));
     }
 
-    public function getUserById($id)
+    public function reportSettings($id)
     {
-        $user = User::findOrFail($id);
-        return $user;
+        $user = User::find($id);
+        $companies = Company::all();
+        $contractTypes = ContractType::all();
+
+        return view('pages.users.report-settings', compact('user', 'companies', 'contractTypes'));
     }
+
+    public function updateReportSettings(Request $request, User $user): RedirectResponse
+    {
+        // =========================
+        // COMPANIES SYNC
+        // =========================
+        $companiesData = [];
+
+        foreach ($request->input('companies', []) as $companyId => $settings) {
+            $companiesData[$companyId] = [
+                'receive_report' => isset($settings['receive_report']),
+            ];
+        }
+
+        $user->companies()->sync($companiesData);
+
+        // =========================
+        // CONTRACT TYPES SYNC
+        // =========================
+        $typesData = [];
+
+        foreach ($request->input('contract_types', []) as $typeId => $settings) {
+            $typesData[$typeId] = [
+                'receive_report' => isset($settings['receive_report']),
+            ];
+        }
+
+        $user->contractTypes()->sync($typesData);
+
+        // =========================
+        // BACK WITH MESSAGE
+        // =========================
+        return redirect()
+            ->back()
+            ->with('success', 'რეპორტის პარამეტრები წარმატებით შეინახა');
+    }
+
 
     public function update(Request $request, $id)
     {

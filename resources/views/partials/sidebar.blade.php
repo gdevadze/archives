@@ -8,70 +8,79 @@
                 <span>@lang('dashboard')</span>
             </a>
         </li>
-
+        @can('document-upload')
         <li>
             <a href="{{ route('documents.create') }}" class="waves-effect">
                 <i class="bx bx-list-ol"></i>
                 <span>@lang('upload_document')</span>
             </a>
         </li>
-
+        @endcan
+        @can('document-list')
         <li>
             <a href="{{ route('documents.index') }}" class="waves-effect">
                 <i class="bx bx-list-ol"></i>
                 <span>@lang('uploaded_documents')</span>
             </a>
         </li>
-
+        @endcan
+        @can('document-pending-list')
         <li>
             <a href="{{ route('document.changes.index') }}" class="waves-effect">
                 <i class="bx bx-list-ol"></i>
                 <span>@lang('pending_documents')</span>
             </a>
         </li>
-
+        @endcan
+        @can('document-trash')
         <li>
             <a href="{{ route('documents.trash') }}" class="waves-effect">
                 <i class="bx bx-list-ol"></i>
                 <span>@lang('trash_documents')</span>
             </a>
         </li>
-
+        @endcan
+        @can('company-list')
         <li>
             <a href="{{ route('companies.index') }}" class="waves-effect">
                 <i class="bx bx-list-ol"></i>
                 <span>@lang('companies')</span>
             </a>
         </li>
-
+        @endcan
+        @can('contract-type-list')
         <li>
             <a href="{{ route('contract_types.index') }}" class="waves-effect">
                 <i class="bx bx-list-ol"></i>
                 <span>@lang('contract_types')</span>
             </a>
         </li>
-
+        @endcan
+        @can('user-list')
         <li>
             <a href="{{ route('users.index') }}" class="waves-effect">
                 <i class="bx bx-list-ol"></i>
                 <span>@lang('users')</span>
             </a>
         </li>
+        @endcan
 
-        <li>
-            <a href="{{ route('roles.index') }}" class="waves-effect">
-                <i class="bx bx-list-ol"></i>
-                <span>@lang('roles')</span>
-            </a>
-        </li>
-
+        @can('report-list')
         <li>
             <a href="{{ route('reports.documents') }}" class="waves-effect">
                 <i class="bx bx-list-ol"></i>
                 <span>@lang('reports')</span>
             </a>
         </li>
-
+        @endcan
+        @can('role-list')
+            <li>
+                <a href="{{ route('roles.index') }}" class="waves-effect">
+                    <i class="bx bx-list-ol"></i>
+                    <span>@lang('roles')</span>
+                </a>
+            </li>
+        @endcan
 {{--            <li>--}}
 {{--                <a href="javascript: void(0);" class="has-arrow waves-effect">--}}
 {{--                    <i class="bx bx-list-ol"></i>--}}

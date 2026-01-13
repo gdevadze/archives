@@ -28,13 +28,22 @@
 
         <div class="card p-4 shadow-sm">
             <div class="row">
-                <div class="mb-3">
+                <div class="col-6 mb-3">
                     <label>@lang('company')</label>
                     <select id="company_id" class="form-select js-example-basic-multiple" multiple required>
                         <option value="">@lang('choose_companies')</option>
                         @foreach($companies as $c)
                             <option value="{{ $c->id }}">{{ $c->company_name }} - {{ $c->identification_code }}</option>
                         @endforeach
+                    </select>
+                    <small class="text-danger d-none" id="err-company_id"></small>
+                </div>
+
+                <div class="col-6 mb-3">
+                    <label>@lang('is_signed')</label>
+                    <select id="is_signed" class="form-select" required>
+                        <option value="1">@lang('yes')</option>
+                        <option value="0">@lang('no')</option>
                     </select>
                     <small class="text-danger d-none" id="err-company_id"></small>
                 </div>
@@ -200,6 +209,7 @@
                 formData.append("contract_date", $("#contract_date").val());
                 formData.append("comment", $("#comment").val());
                 formData.append("amount", $("#amount").val());
+                formData.append("is_signed", $("#is_signed").val());
                 formData.append("document_no", $("#document_no").val());
                 formData.append("temp_file", $("#temp_file").val());
                 formData.append("file_original_name", $("#file_original_name").val());

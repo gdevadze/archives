@@ -13,12 +13,28 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $companies = Company::withCount('documents')->get();
+        if(currentUser()->hasRole('მომხმარებელი')){
+            $companies = currentUser()->companies()
+                ->withCount('documents')
+                ->get();
+        }else{
+            $companies = Company::withCount('documents')->get();
+        }
         return view('pages.dashboard',compact('companies'));
     }
 
     public function company(Request $request, $id): View
     {
+        if(currentUser()->hasRole('მომხმარებელი')){
+            $hasAccess = currentUser()->companies()
+                ->where('companies.id', $id)
+                ->exists();
+
+            if (!$hasAccess) {
+                abort(403, 'თქვენ არ გაქვთ ამ კომპანიის ნახვის უფლება');
+            }
+        }
+
         $company = Company::findOrFail($id);
         $contractTypes = ContractType::all();
 

@@ -168,12 +168,14 @@
                                     <i class="bi bi-download"></i>
                                 </a>
 
-                                {{-- DOWNLOAD --}}
+                                {{-- EDIT --}}
+                                @can('document-edit')
                                 <a href="{{ route('documents.requestChange', $doc->id) }}"
                                    class="btn btn-primary btn-sm">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-
+                                @endcan
+                                @can('document-delete')
                                 <form method="POST"
                                       action="{{ route('documents.destroy', $doc->id) }}"
                                       onsubmit="return confirm('დოკუმენტის წაშლა გსურთ?')"
@@ -184,6 +186,7 @@
                                         @lang('delete')
                                     </button>
                                 </form>
+                                @endcan
 
                             </div>
 

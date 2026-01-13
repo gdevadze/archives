@@ -147,7 +147,11 @@
                     {data: 'role', name: 'role'},
                     {data: 'action', name: 'action'},
                     {data: 'surname', name: 'surname',visible:false},
-                ]
+                ],
+                createdRow: function (row, data, index) {
+                    $(row).find('[data-bs-toggle="tooltip"]').tooltip();
+
+                }
             });
         });
 
@@ -174,7 +178,7 @@
                     return new Promise(function (resolve) {
                         $('.swal2-confirm').html('<i class="fa fa-spinner fa-spin mr-1"></i>');
                         $.ajax({
-                            url: "{{ route('users.disabe.user') }}",
+                            url: "{{ route('users.disable.user') }}",
                             type: "POST",
                             dataType: "JSON",
                             data: {

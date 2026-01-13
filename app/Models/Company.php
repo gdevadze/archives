@@ -32,6 +32,13 @@ class Company extends Model
             ->withTimestamps();
     }
 
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class)
+            ->withPivot('receive_report')
+            ->withTimestamps();
+    }
+
 
     public function companyName(): Attribute
     {

@@ -9,8 +9,13 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserProfileController;
+use App\Mail\MonthlyDocumentsReportMail;
+use App\Models\Company;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 
@@ -23,6 +28,81 @@ Route::get('/', function () {
 });
 
 Auth::routes(['register' => false]);
+
+Route::get('/test_email_send', function (){
+    // =========================
+    // PERIOD: PREVIOUS MONTH
+    // =========================
+    $start = Carbon::now()->subMonth()->startOfMonth();
+    $end   = Carbon::now()->subMonth()->endOfMonth();
+
+    // =========================
+    // LOAD USERS WITH SETTINGS
+    // =========================
+    $users = User::with([
+        'companies' => function ($q) {
+            $q->wherePivot('receive_report', true);
+        },
+        'contractTypes' => function ($q) {
+            $q->wherePivot('receive_report', true);
+        },
+    ])->get();
+
+    foreach ($users as $user) {
+
+        // თუ არაფერი აქვს მონიშნული — გამოტოვე
+        if ($user->companies->isEmpty() || $user->contractTypes->isEmpty()) {
+            continue;
+        }
+
+        $allowedCompanyIds = $user->companies->pluck('id')->values();
+        $allowedTypeIds    = $user->contractTypes->pluck('id')->values();
+
+        $report = [];
+
+        // =========================
+        // PER COMPANY
+        // =========================
+        foreach ($user->companies as $company) {
+
+            // დამატებითი დაცვა (FK პრობლემების თავიდან ასაცილებლად)
+            if (!$allowedCompanyIds->contains($company->id)) {
+                continue;
+            }
+
+            $documents = $company->documents()
+                ->whereBetween('documents.created_at', [$start, $end])
+                ->whereIn('documents.contract_type_id', $allowedTypeIds)
+                ->with('contractType')
+                ->get();
+
+            if ($documents->isEmpty()) {
+                continue;
+            }
+
+            $grouped = $documents->groupBy('contract_type_id');
+
+            foreach ($grouped as $docs) {
+                $report[] = [
+                    'company'       => $company->company_name,
+                    'contract_type' => $docs->first()->contractType->contract_type_name ?? 'N/A',
+                    'total'         => $docs->count(),
+                ];
+            }
+        }
+
+        // =========================
+        // SEND EMAIL IF HAS DATA
+        // =========================
+        if (empty($report)) {
+            continue;
+        }
+
+        Mail::to($user->email)
+            ->send(new MonthlyDocumentsReportMail($report, $start));
+    }
+});
+
 
 Route::get('locale/{locale}', function ($locale) {
     session(['locale' => $locale]);
@@ -132,9 +212,9 @@ Route::middleware(['auth', 'locale'])->group(function () {
         Route::patch('/{id}/update', [UserController::class, 'update'])->name('update');
         Route::post('/users_ajax', [UserController::class, 'getUsersForAjax'])->name('ajax');
         Route::post('/delete_user', [UserController::class, 'deleteUser'])->name('delete.user');
-        Route::post('/disable_user', [UserController::class, 'disableUser'])->name('disabe.user');
-        Route::post('/render_relation_data', [UserController::class, 'renderRelationData'])->name('render.relation.data');
-        Route::get('/show_ratings/{id}',[UserController::class,'showEmployeeRating'])->name('show.employee.ratings');
+        Route::post('/disable_user', [UserController::class, 'disableUser'])->name('disable.user');
+        Route::get('/report_settings/{id}', [UserController::class, 'reportSettings'])->name('report.settings');
+        Route::put('/report_settings/{user}/update', [UserController::class, 'updateReportSettings'])->name('update.report.settings');
         Route::get('/impersonate/{id}', function ($id) {
             $user = User::findOrFail($id);
             Auth::user()->impersonate($user);

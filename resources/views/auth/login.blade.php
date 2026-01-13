@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ka">
 <head>
     <meta charset="utf-8" />
     <title>Login – {{ config('app.name') }}</title>
@@ -11,147 +11,194 @@
 
     <style>
         body {
-            background: #f0f2f5;
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at top left, #e8edff, transparent 60%),
+                radial-gradient(circle at bottom right, #f0f4ff, transparent 60%),
+                #f6f7fb;
+            font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
         }
 
-        .login-card {
-            border-radius: 18px;
-            overflow: hidden;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
-            border: none;
-        }
-
-        .login-header {
-            background: linear-gradient(135deg, #355cdb, #2a3cad);
-            padding: 40px;
-            color: #fff;
-        }
-
-        .login-header h3 {
-            font-weight: 600;
-        }
-
-        .login-logo {
-            width: 70px;
-            height: 70px;
-            background: rgba(255,255,255,0.15);
-            border-radius: 50%;
+        .login-wrapper {
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 15px;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 420px;
+            border-radius: 22px;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(10px);
+            box-shadow:
+                0 30px 60px rgba(20, 30, 90, 0.15),
+                inset 0 1px 0 rgba(255,255,255,0.6);
+            border: none;
+            overflow: hidden;
+        }
+
+        .login-header {
+            padding: 42px 30px 32px;
+            text-align: center;
+            background: linear-gradient(135deg, #3a5bff, #2f3fbf);
+            color: #fff;
+        }
+
+        .login-logo {
+            width: 74px;
+            height: 74px;
+            border-radius: 18px;
+            background: rgba(255,255,255,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
         }
 
         .login-logo img {
-            width: 42px;
-            opacity: 0.95;
+            width: 46px;
+        }
+
+        .login-header h3 {
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .login-header p {
+            font-size: 14px;
+            opacity: 0.85;
+            margin: 0;
+        }
+
+        .card-body {
+            padding: 36px 32px;
+        }
+
+        .form-label {
+            font-weight: 500;
+            font-size: 14px;
+            margin-bottom: 6px;
         }
 
         .form-control {
-            height: 48px;
-            border-radius: 10px;
+            height: 50px;
+            border-radius: 12px;
+            border: 1px solid #e2e6f0;
+            font-size: 15px;
+            padding: 0 14px;
         }
 
-        .btn-primary {
-            height: 48px;
-            border-radius: 10px;
-            font-size: 17px;
+        .form-control:focus {
+            border-color: #3a5bff;
+            box-shadow: 0 0 0 3px rgba(58, 91, 255, 0.15);
         }
 
         .input-group-text {
+            border-radius: 0 12px 12px 0;
+            background: #f4f6fb;
+            border: 1px solid #e2e6f0;
             cursor: pointer;
         }
 
-        .text-muted a:hover {
-            text-decoration: underline;
+        .btn-login {
+            height: 52px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #3a5bff, #2f3fbf);
+            border: none;
+            box-shadow: 0 12px 25px rgba(58, 91, 255, 0.35);
+        }
+
+        .btn-login:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 16px 30px rgba(58, 91, 255, 0.45);
+        }
+
+        .footer-text {
+            text-align: center;
+            font-size: 13px;
+            color: #8a8fa3;
+            margin-top: 18px;
         }
     </style>
 </head>
 
 <body>
 
-<div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
-    <div class="col-md-6 col-lg-5 col-xl-4">
+<div class="login-wrapper">
+    <div class="login-card">
 
-        <div class="card login-card">
-
-            <!-- HEADER -->
-            <div class="login-header text-center">
-                <div class="login-logo">
-                    <img src="https://metroholding.ge/assets/images/logo-dark.png" alt="">
-                </div>
-                <h3>{{ config('app.name') }}</h3>
-                <p class="mb-0" style="opacity: .85">ფაილების არქივის მართვის სისტემა</p>
+        <!-- HEADER -->
+        <div class="login-header">
+            <div class="login-logo">
+                <img src="https://metroholding.ge/assets/images/logo-dark.png" alt="">
             </div>
-
-            <!-- BODY -->
-            <div class="card-body p-4">
-
-                <form method="POST" action="{{ route('login') }}">
-                    @csrf
-
-                    <!-- EMAIL -->
-                    <div class="mb-3">
-                        <label class="form-label">ელ. ფოსტა</label>
-                        <input type="text"
-                               class="form-control @error('email') is-invalid @enderror"
-                               value="{{ old('email') }}"
-                               name="email"
-                               placeholder="შეიყვანეთ ელ. ფოსტა"
-                               required>
-                        @error('email')
-                        <small class="text-danger d-block">{{ $message }}</small>
-                        @enderror
-                    </div>
-
-                    <!-- PASSWORD -->
-                    <div class="mb-3">
-                        <label class="form-label">პაროლი</label>
-                        <div class="input-group">
-                            <input type="password"
-                                   class="form-control @error('password') is-invalid @enderror"
-                                   name="password"
-                                   id="passwordInput"
-                                   placeholder="შეიყვანეთ პაროლი"
-                                   required>
-
-                            <span class="input-group-text" id="togglePassword">
-                                <i class="mdi mdi-eye-outline"></i>
-                            </span>
-                        </div>
-
-                        @error('password')
-                        <small class="text-danger d-block">{{ $message }}</small>
-                        @enderror
-                    </div>
-
-                    <!-- BUTTON -->
-                    <div class="mt-4 d-grid">
-                        <button type="submit" class="btn btn-primary">
-                            შესვლა
-                        </button>
-                    </div>
-
-                </form>
-
-            </div>
+            <h3>{{ config('app.name') }}</h3>
+            <p>დოკუმენტების არქივის სისტემა</p>
         </div>
 
-        <p class="text-center text-muted mt-3">
-            © {{ date('Y') }} – შექმნეს <b>Gio Dev</b>
-        </p>
+        <!-- BODY -->
+        <div class="card-body">
 
+            <form method="POST" action="{{ route('login') }}">
+                @csrf
+
+                <div class="mb-3">
+                    <label class="form-label">ელ. ფოსტა</label>
+                    <input type="email"
+                           class="form-control @error('email') is-invalid @enderror"
+                           name="email"
+                           value="{{ old('email') }}"
+                           placeholder="name@company.ge"
+                           required>
+                    @error('email')
+                    <small class="text-danger">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">პაროლი</label>
+                    <div class="input-group">
+                        <input type="password"
+                               class="form-control @error('password') is-invalid @enderror"
+                               name="password"
+                               id="passwordInput"
+                               placeholder="••••••••"
+                               required>
+                        <span class="input-group-text" id="togglePassword">
+                            <i class="mdi mdi-eye-outline"></i>
+                        </span>
+                    </div>
+                    @error('password')
+                    <small class="text-danger">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-login text-white">
+                        სისტემაში შესვლა
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
     </div>
 </div>
 
+<p class="footer-text">
+    © {{ date('Y') }} {{ config('app.name') }} · Archive Management System
+</p>
+
 <script src="{{ asset('admin/libs/jquery/jquery.min.js') }}"></script>
 <script>
-    // Show / Hide Password
     $('#togglePassword').on('click', function () {
         let pass = $('#passwordInput');
         let type = pass.attr('type') === 'password' ? 'text' : 'password';
         pass.attr('type', type);
-
         $(this).find('i').toggleClass('mdi-eye-outline mdi-eye-off-outline');
     });
 </script>

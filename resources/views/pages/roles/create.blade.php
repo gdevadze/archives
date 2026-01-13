@@ -11,7 +11,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                        <h4 class="mb-sm-0 font-size-18">მომხმარებლები</h4>
+                        <h4 class="mb-sm-0 font-size-18">უფლების დამატება</h4>
 
 
                     </div>
@@ -47,28 +47,46 @@
 
 
 
-                    <form action="{{ route('roles.store') }}" method="POST">
-                        @csrf
+                        <form action="{{ route('roles.store') }}" method="POST">
+                            @csrf
 
-                        <div class="form-group">
-                            <label><strong>Name:</strong></label>
-                            <input type="text" name="name" class="form-control" placeholder="Name">
-                        </div>
+                            <div class="form-group">
+                                <label><strong>დასახელება:</strong></label>
+                                <input type="text" name="name" class="form-control" placeholder="@lang('Name')">
+                            </div>
+                            @php
+                                $grouped = collect($permission)->groupBy(function($item) {
+                                    return explode('-', $item->name)[0]; // group by prefix
+                                });
+                            @endphp
+                            @foreach($grouped as $group => $perms)
+                                <div class="border p-2 mb-3">
+                                    <h5 class="text-capitalize d-flex justify-content-between align-items-center">
+                                        {{ $group }}
+                                        <label>
+                                            <input type="checkbox" class="check-all" data-group="{{ $group }}">
+                                            <small>ყველას მონიშვნა</small>
+                                        </label>
+                                    </h5>
 
-                        <div class="form-group">
-                            <label><strong>Permission:</strong></label><br>
-                            @foreach($permission as $value)
-                                <label>
-                                    <input type="checkbox" name="permission[]" value="{{ $value->id }}">
-                                    {{ $value->name }}
-                                </label><br>
+                                    @foreach($perms as $value)
+                                        <label class="d-block">
+                                            <input type="checkbox"
+                                                   name="permission[]"
+                                                   value="{{ $value->id }}"
+                                                   class="perm-checkbox group-{{ $group }}"
+                                            >
+                                            {{ __('permission.'.$value->name) }}</label>
+                                        </label>
+                                    @endforeach
+                                </div>
                             @endforeach
-                        </div>
 
-                        <div class="form-group text-center">
-                            <button type="submit" class="btn btn-primary">Submit</button>
-                        </div>
-                    </form>
+                            <div class="form-group text-center">
+                                <button type="submit" class="btn btn-primary">დამატება</button>
+                            </div>
+                        </form>
+
 
 
 
@@ -77,3 +95,16 @@
         </div>
     </div>
 @endsection
+@push('js')
+    <script>
+        document.querySelectorAll('.check-all').forEach(function(masterCheckbox) {
+            masterCheckbox.addEventListener('change', function() {
+                const group = this.getAttribute('data-group');
+                const checkboxes = document.querySelectorAll('.group-' + group);
+                checkboxes.forEach(function(checkbox) {
+                    checkbox.checked = masterCheckbox.checked;
+                });
+            });
+        });
+    </script>
+@endpush

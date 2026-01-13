@@ -26,12 +26,36 @@ class DocumentController extends Controller
     public function ajax(Request $request): JsonResponse
     {
         $documents = Document::query();
-        $companyIds = $request->company_ids;
-        if ($companyIds){
-            $documents = $documents->whereHas('companies', function ($q) use ($companyIds) {
-                $q->whereIn('companies.id', $companyIds);
-            });
+        if (currentUser()->hasRole('მომხმარებელი')) {
+
+            // user-სთვის დაშვებული კომპანიები
+            $allowedCompanyIds = currentUser()->companies()->pluck('companies.id')->toArray();
+
+            // თუ request-ში company_ids არის — ვკვეთავთ დაშვებულებთან
+            $companyIds = $request->company_ids
+                ? array_intersect($request->company_ids, $allowedCompanyIds)
+                : $allowedCompanyIds;
+
+            // თუ საბოლოოდ არაფერი დარჩა — შედეგი ცარიელია
+            if (empty($companyIds)) {
+                $documents->whereRaw('1 = 0');
+            } else {
+                $documents->whereHas('companies', function ($q) use ($companyIds) {
+                    $q->whereIn('companies.id', $companyIds);
+                });
+            }
+
+        } else {
+
+            // admin / manager
+            if ($request->company_ids) {
+                $documents->whereHas('companies', function ($q) use ($request) {
+                    $q->whereIn('companies.id', $request->company_ids);
+                });
+            }
         }
+        $companyIds = $request->company_ids;
+
         if ($request->contract_type){
             $documents = $documents->where('contract_type_id',$request->contract_type);
         }

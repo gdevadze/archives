@@ -20,5 +20,8 @@
     "file_name": "File Name",
     "filter": "Filter",
     "delete": "Delete",
+    "is_signed": "Is Signed",
+    "yes": "Yes",
+    "no": "No",
     "reports": "Reports"
 }
