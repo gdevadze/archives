@@ -148,7 +148,7 @@ class UserController extends Controller
             'name' => 'required',
             'surname' => 'required',
 
-            'tel' => 'required',
+            'tel' => '',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|same:confirm-password',
             'roles' => 'required'
