@@ -137,7 +137,7 @@
                 <img src="https://metroholding.ge/assets/images/logo-dark.png" alt="">
             </div>
             <h3>{{ config('app.name') }}</h3>
-            <p>დოკუმენტების არქივის სისტემა</p>
+            <p>დოკუმენტების არქივის სისტემააააა</p>
         </div>
 
         <!-- BODY -->
