@@ -33,7 +33,7 @@ services:
       timeout: 20s
       retries: 3
     ports:
-      - "127.0.0.1:${DB_EXTERNAL_PORT}:3306"
+      - ${DB_EXTERNAL_PORT}:3306
     environment:
       MARIADB_DATABASE: ${DB_DATABASE}
       MARIADB_USER: ${DB_USERNAME}
