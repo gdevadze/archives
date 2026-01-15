@@ -23,7 +23,7 @@ services:
     restart: unless-stopped
     working_dir: /var/www
     volumes:
-      - ./app:/var/www/app
+      - ./:/var/www/app
     depends_on:
       - db
 
