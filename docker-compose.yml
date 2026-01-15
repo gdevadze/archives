@@ -10,7 +10,7 @@ services:
     depends_on:
       - app
 
-    app:
+  app:
       build:
         context: .
         dockerfile: _docker/app/Dockerfile
