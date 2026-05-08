@@ -218,12 +218,8 @@ Route::middleware(['auth', 'locale'])->group(function () {
 
     Route::group(['prefix' => 'reports', 'as' => 'reports.'], function () {
         Route::get('/documents', [ReportController::class, 'monthlyDocuments'])->name('documents');
-        Route::post('/ajax', [ForestController::class, 'ajax'])->name('ajax');
-        Route::post('/create', [ForestController::class, 'createRender'])->name('create');
-        Route::post('/edit', [ForestryAdministrationController::class, 'editRender'])->name('edit');
-        Route::post('/store', [ForestController::class, 'store'])->name('store');
-        Route::post('/{id}/update', [ForestryAdministrationController::class, 'update'])->name('update');
-        Route::post('/delete_blog', [ForestryAdministrationController::class, 'deleteBlog'])->name('delete');
+        Route::get('/documents/export', [ReportController::class, 'monthlyDocumentsExport'])->name('documents.export');
+
     });
 
     Route::group(['prefix' => 'users','as' => 'users.'], function () {

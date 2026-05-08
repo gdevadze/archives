@@ -37,6 +37,18 @@
                         <div class="col-md-3 d-flex align-items-end">
                             <button class="btn btn-primary w-100">ძიება</button>
                         </div>
+
+                        {{-- EXCEL EXPORT --}}
+                        <div class="col-md-3 d-flex align-items-end">
+                            <a href="{{ route('reports.documents.export', [
+                        'month' => $month,
+                        'year' => $year
+                    ]) }}"
+                               class="btn btn-success w-100">
+                                <i class="fas fa-file-excel me-1"></i>
+                                Excel Export
+                            </a>
+                        </div>
                     </form>
 
                 </div>

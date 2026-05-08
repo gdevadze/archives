@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\DocumentsReportExport;
 use App\Models\Document;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ReportController extends Controller
 {
@@ -87,6 +89,17 @@ class ReportController extends Controller
             'companies',
             'types'
         ));
+    }
+
+    public function monthlyDocumentsExport(Request $request)
+    {
+        $month = $request->month ?? now()->month;
+        $year = $request->year ?? now()->year;
+
+        return Excel::download(
+            new DocumentsReportExport($month, $year),
+            "documents-report-{$month}-{$year}.xlsx"
+        );
     }
 
 }
