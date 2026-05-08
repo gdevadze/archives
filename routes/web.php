@@ -27,6 +27,14 @@ Route::get('/', function () {
     return view('auth.login');
 });
 
+Route::get('/phpinfo', function (){
+    dd([
+        ini_get('upload_max_filesize'),
+        ini_get('post_max_size')
+    ]);
+    phpinfo();
+});
+
 Auth::routes(['register' => false]);
 
 Route::get('/test_email_send', function (){
@@ -97,9 +105,23 @@ Route::get('/test_email_send', function (){
         if (empty($report)) {
             continue;
         }
+        try {
 
-        Mail::to($user->email)
-            ->send(new MonthlyDocumentsReportMail($report, $start));
+            Mail::to('giodevadze01@gmail.com')
+                ->send(new MonthlyDocumentsReportMail($report, $start));
+
+        } catch (\Throwable $e) {
+
+            dd([
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+        }
+        return $report;
+
     }
 });
 

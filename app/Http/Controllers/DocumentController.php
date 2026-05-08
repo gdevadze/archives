@@ -62,9 +62,19 @@ class DocumentController extends Controller
         if ($request->year){
             $documents = $documents->where('year',$request->year);
         }
-        if ($request->contract_date){
-            $documents = $documents->where('contract_date',$request->contract_date);
+        if ($request->contract_start_date){
+            $documents = $documents->where('contract_date','>=',$request->contract_start_date);
         }
+        if ($request->contract_end_date){
+            $documents = $documents->where('contract_date','<=',$request->contract_end_date);
+        }
+        $documents->when($request->filled('price_start'), function ($q) use ($request) {
+            $q->whereRaw('CAST(amount AS DECIMAL(10,2)) >= ?', [$request->price_start]);
+        });
+
+        $documents->when($request->filled('price_end'), function ($q) use ($request) {
+            $q->whereRaw('CAST(amount AS DECIMAL(10,2)) <= ?', [$request->price_end]);
+        });
         return Datatables()->of($documents)
             ->addIndexColumn()
             ->addColumn('company_names', function ($data) {

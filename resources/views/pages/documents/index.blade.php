@@ -68,7 +68,7 @@
                                     </select>
                                 </div>
 
-                                <div class="form-group col-md-6">
+                                <div class="form-group col-md-4">
                                     <strong>წელი</strong>
                                     <select class="form-control js-example-basic-simple" id="year">
                                         <option value="">აირჩიეთ</option>
@@ -78,11 +78,25 @@
                                     </select>
                                 </div>
 
-                                <div class="form-group col-md-6">
-                                    <strong>ხელშეკრულების თარიღი</strong>
-                                    <input type="date" class="form-control" id="contract_date" >
+                                <div class="form-group col-md-4">
+                                    <strong>ხელშეკრულების თარიღი - დან</strong>
+                                    <input type="date" class="form-control" id="contract_start_date" >
                                 </div>
 
+                                <div class="form-group col-md-4">
+                                    <strong>ხელშეკრულების თარიღი - მდე</strong>
+                                    <input type="date" class="form-control" id="contract_end_date" >
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    <strong>ხელშეკრულების თანხა - დან</strong>
+                                    <input type="text" class="form-control" id="price_start" >
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    <strong>ხელშეკრულების თანხა - მდე</strong>
+                                    <input type="text" class="form-control" id="price_end" >
+                                </div>
                             </div>
                             <table id="users" class="table table-bordered dt-responsive  nowrap w-100">
                                 <thead>
@@ -91,6 +105,7 @@
                                     <th scope="col">დოკუმენტის ნომერი</th>
                                     <th scope="col">კომპანიები</th>
                                     <th scope="col">ხელშეკრულების თარიღი</th>
+                                    <th scope="col">თანხა</th>
                                     <th scope="col">კომენტარი</th>
                                     <th scope="col">მოქმედება</th>
                                 </tr>
@@ -179,7 +194,13 @@
     <script>
         $(document).ready(function () {
 
-            flatpickr("#contract_date", {
+            flatpickr("#contract_start_date", {
+                "locale": "ka",
+                altInput: true,
+                altFormat: "d.m.Y",
+                dateFormat: "Y-m-d",
+            });
+            flatpickr("#contract_end_date", {
                 "locale": "ka",
                 altInput: true,
                 altFormat: "d.m.Y",
@@ -220,7 +241,10 @@
                         d._token = '{{ csrf_token() }}'
                         d.company_ids = companies
                         d.contract_type = $('#contract_type').val()
-                        d.contract_date = $('#contract_date').val()
+                        d.contract_start_date = $('#contract_start_date').val()
+                        d.contract_end_date = $('#contract_end_date').val()
+                        d.price_start = $('#price_start').val()
+                        d.price_end = $('#price_end').val()
                         d.year = $('#year').val()
                     }
                 },
@@ -229,6 +253,7 @@
                     {data: 'title', name: 'title'},
                     {data: 'company_names', name: 'title'},
                     {data: 'formatted_contract_date', name: 'contract_date'},
+                    {data: 'amount', name: 'amount'},
                     {data: 'comment', name: 'comment'},
                     {data: 'action', name: 'action'},
                 ]
@@ -254,6 +279,22 @@
             });
 
             $('#contract_date').on('change', function () {
+                table.draw();
+            });
+
+            $('#contract_start_date').on('change', function () {
+                table.draw();
+            });
+
+            $('#contract_end_date').on('change', function () {
+                table.draw();
+            });
+
+            $('#price_start').on('input', function () {
+                table.draw();
+            });
+
+            $('#price_end').on('input', function () {
                 table.draw();
             });
         });
