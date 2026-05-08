@@ -29,7 +29,7 @@
             align-items: center;
             border-bottom: 1px dashed #d1d5db;
             padding-bottom: 6px;
-            margin-bottom: 8px;
+            /*margin-bottom: 8px;*/
         }
 
         .header-title {
@@ -62,10 +62,10 @@
         }
 
         .barcode-wrapper {
-            margin-top: 10px;
+            margin-top: 5px;
             text-align: center;
             border-top: 1px dashed #d1d5db;
-            padding-top: 8px;
+            /*padding-top: 8px;*/
         }
 
         .barcode-text {
@@ -127,7 +127,7 @@
     JsBarcode("#barcode", "{{ $document->title }}", {
 
         width: 2,
-        height: 122,
+        height: 100,
         displayValue: false,
         margin: 15
     });
